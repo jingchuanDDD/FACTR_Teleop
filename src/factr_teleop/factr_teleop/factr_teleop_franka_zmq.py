@@ -82,7 +82,7 @@ class FACTRTeleopFrankaZMQ(FACTRTeleop):
         
         if self.enable_gripper_feedback:
             # ROS subscriber for getting the gripper's torque information
-            self.obs_gripper_torque_pub = self.create_subscription(
+            self.obs_gripper_torque_sub = self.create_subscription(
                 JointState, f'/gripper/{self.name}/obs_gripper_torque', 
                 self._gripper_external_torque_callback, 
                 1,

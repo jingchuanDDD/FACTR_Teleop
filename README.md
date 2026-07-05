@@ -1,180 +1,303 @@
+# FACTR Teleop Windows Experiment
 
-<h1> FACTR Teleop: Low-Cost Force-Feedback Teleoperation</h1>
+This repository is a Windows/no-ROS experimental fork based on FACTR Teleop. The current focus is using a 7-DOF Dynamixel leader arm to teleoperate a MuJoCo Franka Panda follower while developing leader-side gravity compensation, friction compensation, force feedback, collision-wall interaction, and joint-limit protection.
 
+Original FACTR resources:
 
+- Project page: https://jasonjzliu.com/factr/
+- Paper: https://arxiv.org/abs/2502.17432
+- Upstream code: https://github.com/RaindragonD/factr/
 
-#### [Jason Jingzhou Liu](https://jasonjzliu.com)<sup>\*</sup>, [Yulong Li](https://yulongli42.github.io)<sup>\*</sup>, [Kenneth Shaw](https://kennyshaw.net), [Tony Tao](https://tony-tao.com), [Ruslan Salakhutdinov](https://www.cs.cmu.edu/~rsalakhu/), [Deepak Pathak](https://www.cs.cmu.edu/~dpathak/)
-_Carnegie Mellon University_
+## Current Hardware
 
-[Project Page](https://jasonjzliu.com/factr/) | [arXiV](https://arxiv.org/abs/2502.17432) | [FACTR](https://github.com/RaindragonD/factr/) | [FACTR Hardware](https://github.com/JasonJZLiu/FACTR_Hardware)
+Leader arm:
 
-<h1> </h1>
-<img src="assets/main_teaser.jpg" alt="teaser" width="750"/>
+- 7 Dynamixel motors, IDs `21-27`
+- Serial port: `COM21`
+- Baudrate: `57600`
+- Joint 2 and 4: `XM540-W270`
+- Joint 1, 3, 5, 6, 7: `XM430-W350`
 
-<br>
+Motor/current constants:
 
-## Catalog
-- [Installation](#installation)
-- [FACTR Teleop](#factr-teleop)
-- [Data Collection](#data-collection)
-- [Training and Deployment](#training-and-deployment)
-- [License and Acknowledgements](#license-and-acknowledgements)
-- [Citation](#citation)
+- `XM430-W350`: `Kt = 1.783 Nm/A`
+- `XM540-W270`: `Kt = 2.409 Nm/A`
+- Dynamixel Goal Current unit: `2.69 mA/raw`
 
+## Main Files
 
-## Installation
+- `test/leader_to_mujoco_franka.py`: main teleoperation script. Reads the physical Dynamixel leader, writes MuJoCo Franka joint positions, and applies leader-side compensation and force feedback.
+- `test/leader_teleop_config.yaml`: main runtime configuration for teleoperation, MuJoCo, compensation, wall contact, force feedback, visualization, and joint-limit barrier.
+- `test/leader_gravity_comp.py`: standalone leader gravity/friction compensation test script.
+- `test/leader_comp_config.yaml`: standalone compensation configuration.
+- `franka_exo/robot.urdf`: leader arm URDF used by Pinocchio for inverse dynamics and gravity compensation.
+- `franka_sim/franka_panda.xml`: base MuJoCo Franka model.
+- `franka_sim/franka_panda_teleop_wall.xml`: generated MuJoCo model with the teleoperation collision wall.
 
-This repository requires **ROS 2**.
-If you have not installed ROS 2 yet, follow the official [ROS 2 installation guide](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html).
+## Environment
 
-### Provided ROS 2 Packages
+The current development environment is a conda environment named:
 
-The following ROS 2 packages are included in this repository:
-
-- `factr_teleop`
-- `bc`
-- `cameras`
-- `python_utils`
-
-These packages are located in:
-
-```
-<repo_root>/src
-```
-
-### ROS 2 Workspace Setup
-
-These packages must reside within a **ROS 2 workspace**. If you do not already have one, create a workspace by following the [ROS 2 workspace tutorial](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html).
-
-Then:
-
-1. Copy the four provided packages into your workspace's `src/` directory.
-2. Ensure to source the ROS2 setup script in your terminal
-   ```bash
-   source /opt/ros/<ROS-Distribution>/setup.bash
-   ```
-   Note that this command should be run everytime you open a new terminal.
-3. From the root of your workspace, build the workspace via:
-   ```bash
-   colcon build --symlink-install
-   ```
-   This should create the following folders in your workspace root
-   ```bash
-   build  install  log  src
-   ```
-4. From the root of your workspace, source the overlay via
-   ```bash
-   source install/local_setup.bash
-   ```
-   Note that this command should also be run everytime you open a new terminal.
-
-> For more guidance, refer to the [ROS 2 Tutorial](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html).
-
-### Additional Python Dependencies
-
-Install [ZMQ](https://zeromq.org/):
-
-```bash
-pip install zmq
-```
-Install [Pinocchio](https://stack-of-tasks.github.io/pinocchio/):
-```bash
-sudo apt install ros-<ROS-Distribution>-pinocchio
-```
-- For example,
-   ```bash
-   sudo apt install ros-humble-pinocchio
-   ```
-Alternatively, try the following via pip.
-```bash
-python -m pip install pin
+```powershell
+ftservo
 ```
 
-Finally, navigate to the Dynamixel submodule and install it via:
-```bash
-cd <repo_root>/src/factr_teleop/factr_teleop/dynamixel
-pip install -e python
+Core Python dependencies used in this workflow:
+
+- `numpy`
+- `pyyaml`
+- `mujoco`
+- `pinocchio`
+- `dynamixel_sdk`
+- `meshcat` for URDF visualization/debugging
+
+ROS is not required for the Windows test scripts.
+
+## Teleoperation
+
+Run the main teleoperation script:
+
+```powershell
+python test\leader_to_mujoco_franka.py
 ```
 
+The script:
 
-## FACTR Teleop
-Instructions for setting up FACTR leader arms and running the provided example demos can be found 
-[here](src/factr_teleop/README.md).
+1. Opens the Dynamixel leader on `COM21`.
+2. Reads motor positions, velocities, and currents.
+3. Maps motor raw positions to Franka joint angles.
+4. Writes the follower state directly into MuJoCo `qpos`.
+5. Computes leader-side gravity, friction, force feedback, and joint-limit torques.
+6. Sends Dynamixel Goal Current commands in current-control mode.
 
+The follower currently uses kinematic `qpos` writing for low-latency teleoperation. This is fast, but MuJoCo contact does not physically block motion unless explicit wall clamp logic is enabled.
 
+## Joint Mapping
 
-## Data Collection
-We provide instructions and sample data collection scripts in ROS2. You might need your custom nodes for robots and sensors to run the system. In our case, the collected data is saved in following format:
-### Data Structure
-Each trajectory is saved as a separate pickle file. Each pickle file contains a dictionary with the following structure:
+The teleoperation mapping is configured in `test/leader_teleop_config.yaml`:
+
+```yaml
+teleop_mapping:
+  q_m0_deg: [180, 180, 180, 180, 180, 180, 180]
+  q_r0: [0.0, 0.0, 0.0, -1.57, 0.0, 0.0, 0.0]
+  sign: [1, 1, 1, -1, 1, -1, 1]
 ```
-trajectory.pkl
-├── "data" : dict
-│   ├── "topic_name_1" : list[data_points]
-│   ├── "topic_name_2" : list[data_points]
-│   └── ...
-└── "timestamps" : dict
-    ├── "topic_name_1" : list[timestamps]
-    ├── "topic_name_2" : list[timestamps]
-    └── ...
-```
-### Key Components:
 
-- **data**: A dictionary where:
-  - Keys are the data source names (ROS topic names in our implementation)
-  - Values are lists containing the actual data points (low-dimensional states or images)
+The script normalizes Dynamixel multi-turn raw position readings back to the nearest single-turn value around the motor zero position. This prevents abnormal readings such as `-24660` on joint 7 from producing unrealistic joint angles.
 
-- **timestamps**: A dictionary where:
-  - Keys are the same data source names as in the "data" dictionary
-  - Values are lists containing the timestamps when each corresponding data point was recorded
+## Gravity Compensation
 
-*Note*: Different data sources may log at different frequencies, resulting in varying list lengths across data sources. The timestamps are crucial for properly aligning and post-processing the data.
-While ROS provides synchronization APIs, we chose to record raw timestamps and perform post-processing to allow for greater flexibility in data analysis and alignment.
+Gravity compensation is computed with Pinocchio using:
+
 ```python
-# Example of a trajectory structure
-{
-    "data": {
-        "/camera/rgb/image_raw": [image1, image2, ...],
-        "/joint_states": [state1, state2, ...],
-        "/robot/end_effector_pose": [pose1, pose2, ...]
-    },
-    "timestamps": {
-        "/camera/rgb/image_raw": [1615420323.45, 1615420323.55, ...],
-        "/joint_states": [1615420323.40, 1615420323.50, ...],
-        "/robot/end_effector_pose": [1615420323.42, 1615420323.52, ...]
-    }
-}
+tau_g = pin.rnea(model, data, q, dq, zeros)
 ```
 
+The leader URDF is:
 
-
-## Training and Deployment
-
-### Data Processing and Training
-Please check for detailed instructions in our [factr](https://github.com/RaindragonD/factr) repo.
-
-### Policy Rollout
-
-We provide a sample rollout script in ROS2. In our case, the rollout launch file could be called as follows: 
-```bash
-ros2 launch factr_teleop/launch/rollout.py
+```text
+franka_exo/robot.urdf
 ```
-Please checkout [rollout.py](launch/rollout.py) for details about configurations.
 
+The gravity compensation configuration is:
 
-## License and Acknowledgements
-This source code is licensed under the Apache 2.0 liscence found in the LICENSE file in the root directory of this repository.
+```yaml
+gravity_comp:
+  enable: true
+  gain: ...
+  joint_gain: [...]
+```
 
-This project builds on top of or utilizes the following third party dependencies.
-- [GELLO](https://wuphilipp.github.io/gello_site/): Inpiration for this work.
-- [ZMQ](https://zeromq.org/): Light-weight communication between python processes.
-- [Pinocchio](https://stack-of-tasks.github.io/pinocchio/): Fast kinematics and dynamics computation for manipulation.
+The URDF mass parameters have been adjusted during calibration. Some masses were reduced, and the `motor_7` mesh mass was added into `link_5` because `motor_7` is a mesh part, not a separate URDF link.
 
+## Friction Compensation
 
-## Citation
-If you find this codebase useful, feel free to cite our work!
-<div style="display:flex;">
-<div>
+Two friction terms are implemented:
+
+- Static friction compensation for low-speed stiction.
+- Kinetic friction compensation with Coulomb and viscous terms.
+
+Static friction compensation is configured with:
+
+```yaml
+static:
+  enable: true
+  enable_speed: ...
+  gain: ...
+  joint_gain: [...]
+  min_torque: [...]
+  max_torque: [...]
+```
+
+Kinetic friction compensation is configured with:
+
+```yaml
+kinetic:
+  enable: true
+  velocity_deadband: ...
+  coulomb: [...]
+  viscous: [...]
+```
+
+The tuning goal is:
+
+- The leader is easier to start moving.
+- It does not drift when untouched.
+- It does not chatter or knock gear backlash.
+
+## Force Feedback
+
+The current force-feedback path uses a MuJoCo collision wall:
+
+```text
+wall contact normal force
+-> end-effector translational Jacobian
+-> follower joint torque estimate
+-> scaled leader feedback torque
+-> Dynamixel current command
+```
+
+Force feedback is configured in:
+
+```yaml
+force_feedback:
+  enable: true
+  source: contact_normal
+  joint_enable: [...]
+  joint_gain: [...]
+  joint_sign: [...]
+  contact_force_max: ...
+  scale: ...
+  max_torque: [...]
+  damping: ...
+```
+
+Unlike upstream FACTR, this experiment keeps per-joint force-feedback switches, gains, and signs because the leader hardware, MuJoCo contact source, and joint mapping are being calibrated independently.
+
+Important safety note: force feedback should be tuned conservatively. Start with one joint enabled, low `scale`, low `max_torque`, and nonzero damping.
+
+## Collision Wall and Visualization
+
+The wall is generated from the base Franka XML and inserted into the MuJoCo world as:
+
+```text
+teleop_collision_wall
+```
+
+Visualization options are configured in YAML:
+
+```yaml
+visualization:
+  enable: true
+  visible_geom_groups: [0, 3]
+  show_all_collision: false
+  hand_collision_rgba: [...]
+  wall_rgba: [...]
+  disable_shadows: true
+  disable_reflections: true
+```
+
+Hand and finger collision geoms are highlighted to make it easier to debug contact.
+
+The wall clamp option prevents kinematic `qpos` writing from pushing the follower through the wall:
+
+```yaml
+clamp_enable: true
+clamp_min_dist: 0.0
+clamp_iterations: 10
+```
+
+This is a kinematic guard, not a true dynamics simulation.
+
+## Joint-Limit Barrier
+
+The leader-side joint-limit barrier follows the FACTR-style repulsive torque:
+
+```python
+tau_limit = -kp * (q - limit) - kd * dq
+```
+
+The script compares:
+
+1. Leader URDF joint limits.
+2. Follower Franka joint limits transformed into leader coordinates.
+
+It uses the intersection as the effective safe range and applies a 3 degree margin:
+
+```yaml
+soft_limits:
+  enable: true
+  source: leader_follower_intersection
+  margin_deg: 3.0
+```
+
+Runtime logs include:
+
+```text
+limit=none
+limit=J2:low
+limit=J6:high
+tau_limit=[...]
+```
+
+## Useful Debug Logs
+
+The teleoperation script can print:
+
+- `raw`
+- `raw_map`
+- `q_leader`
+- `q_cmd`
+- `q_sim`
+- `tau_g`
+- `tau_fs`
+- `tau_fk`
+- `tau_ext_sim`
+- `tau_feedback_sim`
+- `tau_feedback_applied`
+- `tau_limit`
+- `wall_contacts`
+- `wall_clamped`
+- `wall_dist`
+- `wall_pen`
+- `limit`
+
+These logs are useful for separating hardware readout issues, joint mapping issues, MuJoCo contact issues, and leader current-control issues.
+
+## Safety Notes
+
+- Keep one hand near the emergency stop or power switch while testing force feedback.
+- Start force feedback with one joint enabled.
+- Use small current and torque limits before increasing gains.
+- If a joint chatters, drifts, or hits backlash, reduce friction/feedback gains or add current deadband.
+- If a joint is pushed toward its mechanical limit, verify `soft_limits` and `joint_sign`.
+- Do not tune force feedback before gravity and friction compensation are stable.
+
+## Development Status
+
+Implemented:
+
+- Dynamixel leader readout on Windows.
+- MuJoCo Franka kinematic teleoperation.
+- Gravity compensation.
+- Static and kinetic friction compensation.
+- Collision wall and contact-force extraction.
+- Force-feedback torque path.
+- Collision visualization.
+- Joint-limit barrier.
+- Current deadband.
+- Dynamixel multi-turn raw normalization.
+
+Known limitations:
+
+- Force feedback still needs low-pass filtering and torque slew-rate limiting.
+- Kinematic wall clamp is not a physically accurate contact simulation.
+- URDF inertias may need recalibration after mass edits.
+- Contact forces from MuJoCo do not exactly represent a real Franka external torque sensor.
+
+## Attribution
+
+This work is based on the FACTR Teleop codebase and the FACTR paper:
 
 ```bibtex
 @article{factr,

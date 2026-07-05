@@ -1,0 +1,459 @@
+<?xml version="1.0" ?>
+<robot name="franka_exo">
+  <!-- Link link_base -->
+  <link name="link_base">
+    <inertial>
+      <origin xyz="-0.00631608 1.96769e-09 0.0373238" rpy="0 0 0"/>
+      <mass value="0.0921375"/>
+      <inertia ixx="0.000196007" ixy="-7.51359e-11" ixz="-2.24846e-05" iyy="0.000181714" iyz="-1.08584e-10" izz="0.000140674"/>
+    </inertial>
+    <!-- Part link_base -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_base.stl"/>
+      </geometry>
+      <material name="link_base_material">
+        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_base.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link motor430_1 -->
+  <link name="motor430_1">
+    <inertial>
+      <origin xyz="-0.0117508 -1.04071e-11 -0.0163946" rpy="0 0 0"/>
+      <mass value="0.082"/>
+      <inertia ixx="5.47996e-05" ixy="-2.69242e-13" ixz="-9.68372e-07" iyy="9.33719e-05" iyz="-3.58994e-14" izz="8.21586e-05"/>
+    </inertial>
+    <!-- Part motor430_1 -->
+    <visual>
+      <origin xyz="0 0 -0.037" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://assets/motor430_1.stl"/>
+      </geometry>
+      <material name="motor430_1_material">
+        <color rgba="0.647059 0.647059 0.647059 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.037" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://assets/motor430_1.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link link_0 -->
+  <link name="link_0">
+    <inertial>
+      <origin xyz="1.69981e-05 1.84769e-08 0.0628928" rpy="0 0 0"/>
+      <mass value="0.05936"/>
+      <inertia ixx="7.09676e-05" ixy="1.2917e-10" ixz="2.75894e-08" iyy="6.98041e-05" iyz="2.31576e-12" izz="4.26188e-05"/>
+    </inertial>
+    <!-- Part link_0 -->
+    <visual>
+      <origin xyz="-3.08149e-33 -1.62714e-18 -0.0394" rpy="-6.12323e-17 -0 -5.80831e-33"/>
+      <geometry>
+        <mesh filename="package://assets/link_0.stl"/>
+      </geometry>
+      <material name="link_0_material">
+        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-3.08149e-33 -1.62714e-18 -0.0394" rpy="-6.12323e-17 -0 -5.80831e-33"/>
+      <geometry>
+        <mesh filename="package://assets/link_0.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link motor540_2 -->
+  <link name="motor540_2">
+    <inertial>
+      <origin xyz="-3.71779e-10 -0.000530347 -0.0297101" rpy="0 0 0"/>
+      <mass value="0.165"/>
+      <inertia ixx="0.00030311" ixy="4.07257e-12" ixz="8.1428e-13" iyy="0.000250045" iyz="-1.41225e-06" izz="0.000172066"/>
+    </inertial>
+    <!-- Part motor540_2 -->
+    <visual>
+      <origin xyz="1.59157e-17 1.55134e-17 0.12175" rpy="3.14159 -0 5.80831e-33"/>
+      <geometry>
+        <mesh filename="package://assets/motor540_2.stl"/>
+      </geometry>
+      <material name="motor540_2_material">
+        <color rgba="0.301961 0.301961 0.301961 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="1.59157e-17 1.55134e-17 0.12175" rpy="3.14159 -0 5.80831e-33"/>
+      <geometry>
+        <mesh filename="package://assets/motor540_2.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link link_1 -->
+  <link name="link_1">
+    <inertial>
+      <origin xyz="0.000692268 -0.0612309 -0.0247849" rpy="0 0 0"/>
+      <mass value="0.0618805"/>
+      <inertia ixx="0.000128786" ixy="-3.56721e-07" ixz="-7.31199e-09" iyy="5.54436e-05" iyz="7.41134e-07" izz="0.000108163"/>
+    </inertial>
+    <!-- Part link_1 -->
+    <visual>
+      <origin xyz="1.63123e-17 0.1665 -0.0247" rpy="1.5708 -1.40039e-45 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_1.stl"/>
+      </geometry>
+      <material name="link_1_material">
+        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="1.63123e-17 0.1665 -0.0247" rpy="1.5708 -1.40039e-45 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_1.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link motor430_3 -->
+  <link name="motor430_3">
+    <inertial>
+      <origin xyz="-0.0117508 -1.04073e-11 -0.0163946" rpy="0 0 0"/>
+      <mass value="0.082"/>
+      <inertia ixx="5.47996e-05" ixy="-2.69242e-13" ixz="-9.68372e-07" iyy="9.33719e-05" iyz="-3.59002e-14" izz="8.21586e-05"/>
+    </inertial>
+    <!-- Part motor430_3 -->
+    <visual>
+      <origin xyz="0 0 -0.237" rpy="5.60519e-45 -0 -5.06258e-45"/>
+      <geometry>
+        <mesh filename="package://assets/motor430_3.stl"/>
+      </geometry>
+      <material name="motor430_3_material">
+        <color rgba="0.647059 0.647059 0.647059 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.237" rpy="5.60519e-45 -0 -5.06258e-45"/>
+      <geometry>
+        <mesh filename="package://assets/motor430_3.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link link_2 -->
+  <link name="link_2">
+    <inertial>
+      <origin xyz="0.00261601 2.96796e-07 0.0474293" rpy="0 0 0"/>
+      <mass value="0.05754"/>
+      <inertia ixx="5.81373e-05" ixy="5.49634e-10" ixz="-2.48539e-06" iyy="5.58639e-05" iyz="1.1429e-10" izz="5.27528e-05"/>
+    </inertial>
+    <!-- Part link_2 -->
+    <visual>
+      <origin xyz="-1.2326e-32 1.41753e-17 -0.239227" rpy="5.60519e-45 -4.93038e-32 2.52435e-29"/>
+      <geometry>
+        <mesh filename="package://assets/link_2.stl"/>
+      </geometry>
+      <material name="link_2_material">
+        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-1.2326e-32 1.41753e-17 -0.239227" rpy="5.60519e-45 -4.93038e-32 2.52435e-29"/>
+      <geometry>
+        <mesh filename="package://assets/link_2.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link motor540_4 -->
+  <link name="motor540_4">
+    <inertial>
+      <origin xyz="0.0229601 -0.00853035 -0.01675" rpy="0 0 0"/>
+      <mass value="0.165"/>
+      <inertia ixx="0.000172066" ixy="1.41225e-06" ixz="-8.1428e-13" iyy="0.000250045" iyz="4.07257e-12" izz="0.00030311"/>
+    </inertial>
+    <!-- Part motor540_4 -->
+    <visual>
+      <origin xyz="-0.222569 -0.008 0.181593" rpy="3.14159 -0.785398 1.12104e-44"/>
+      <geometry>
+        <mesh filename="package://assets/motor540_4.stl"/>
+      </geometry>
+      <material name="motor540_4_material">
+        <color rgba="0.301961 0.301961 0.301961 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.222569 -0.008 0.181593" rpy="3.14159 -0.785398 1.12104e-44"/>
+      <geometry>
+        <mesh filename="package://assets/motor540_4.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link link_3 -->
+  <link name="link_3">
+    <inertial>
+      <origin xyz="-0.0344992 -0.0669003 -0.0247597" rpy="0 0 0"/>
+      <mass value="0.092856"/>
+      <inertia ixx="0.000269491" ixy="-6.36052e-05" ixz="4.3825e-07" iyy="8.92212e-05" iyz="8.09945e-07" izz="0.000281089"/>
+    </inertial>
+    <!-- Part link_3 -->
+    <visual>
+      <origin xyz="-0.044 0.3245 -0.0247" rpy="1.5708 3.76984e-17 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_3.stl"/>
+      </geometry>
+      <material name="link_3_material">
+        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.044 0.3245 -0.0247" rpy="1.5708 3.76984e-17 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_3.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link motor430_5 -->
+  <link name="motor430_5">
+    <inertial>
+      <origin xyz="-0.0117508 -1.04063e-11 -0.0163946" rpy="0 0 0"/>
+      <mass value="0.082"/>
+      <inertia ixx="5.47996e-05" ixy="-2.6924e-13" ixz="-9.68372e-07" iyy="9.33719e-05" iyz="-3.58955e-14" izz="8.21586e-05"/>
+    </inertial>
+    <!-- Part motor430_5 -->
+    <visual>
+      <origin xyz="0 -1.17343e-29 -0.397" rpy="1.79736e-30 -0 0"/>
+      <geometry>
+        <mesh filename="package://assets/motor430_5.stl"/>
+      </geometry>
+      <material name="motor430_5_material">
+        <color rgba="0.647059 0.647059 0.647059 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -1.17343e-29 -0.397" rpy="1.79736e-30 -0 0"/>
+      <geometry>
+        <mesh filename="package://assets/motor430_5.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link link_4 -->
+  <link name="link_4">
+    <inertial>
+      <origin xyz="1.68698e-05 1.58818e-07 0.0624505" rpy="0 0 0"/>
+      <mass value="0.0504525"/>
+      <inertia ixx="6.0696e-05" ixy="-1.77117e-10" ixz="2.08334e-08" iyy="5.96305e-05" iyz="6.61369e-11" izz="3.09362e-05"/>
+    </inertial>
+    <!-- Part link_4 -->
+    <visual>
+      <origin xyz="0 -2.251e-18 -0.3992" rpy="3.87091e-30 -0 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_4.stl"/>
+      </geometry>
+      <material name="link_4_material">
+        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -2.251e-18 -0.3992" rpy="3.87091e-30 -0 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_4.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link motor430_6 -->
+  <link name="motor430_6">
+    <inertial>
+      <origin xyz="0.0063931 -0.016384 -0.01425" rpy="0 0 0"/>
+      <mass value="0.082"/>
+      <inertia ixx="8.28941e-05" ixy="1.18561e-07" ixz="3.69975e-14" iyy="5.62377e-05" iyz="-2.58387e-13" izz="9.53494e-05"/>
+    </inertial>
+    <!-- Part motor430_6 -->
+    <visual>
+      <origin xyz="0.006 0.4885 -0.01425" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://assets/motor430_6.stl"/>
+      </geometry>
+      <material name="motor430_6_material">
+        <color rgba="0.647059 0.647059 0.647059 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.006 0.4885 -0.01425" rpy="1.5708 1.5708 0"/>
+      <geometry>
+        <mesh filename="package://assets/motor430_6.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link link_5 -->
+  <link name="link_5">
+    <inertial>
+      <origin xyz="0.0361167 0.00387419 -0.0195081" rpy="0 0 0"/>
+      <mass value="0.0942798"/>
+      <inertia ixx="6.832e-06" ixy="-5.00654e-07" ixz="-3.31464e-07" iyy="2.04595e-05" iyz="-2.9315e-08" izz="1.47742e-05"/>
+    </inertial>
+    <!-- Part motor_7 -->
+    <visual>
+      <origin xyz="-3.33067e-16 0.5165 -0.0192" rpy="1.5708 3.8416e-14 -5.55112e-17"/>
+      <geometry>
+        <mesh filename="package://assets/motor_7.stl"/>
+      </geometry>
+      <material name="motor_7_material">
+        <color rgba="0.647059 0.647059 0.647059 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-3.33067e-16 0.5165 -0.0192" rpy="1.5708 3.8416e-14 -5.55112e-17"/>
+      <geometry>
+        <mesh filename="package://assets/motor_7.stl"/>
+      </geometry>
+    </collision>
+    <!-- Part link_5 -->
+    <visual>
+      <origin xyz="2.77556e-17 0.5165 -0.0192" rpy="1.5708 -6.13657e-30 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_5.stl"/>
+      </geometry>
+      <material name="link_5_material">
+        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="2.77556e-17 0.5165 -0.0192" rpy="1.5708 -6.13657e-30 0"/>
+      <geometry>
+        <mesh filename="package://assets/link_5.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Link flange -->
+  <link name="flange">
+    <inertial>
+      <origin xyz="0.00477078 3.79518e-05 0.0167904" rpy="0 0 0"/>
+      <mass value="0.00663715"/>
+      <inertia ixx="1.55713e-06" ixy="-9.0833e-09" ixz="-5.18572e-07" iyy="2.48615e-06" iyz="-4.16646e-09" izz="1.99925e-06"/>
+    </inertial>
+    <!-- Part flange -->
+    <visual>
+      <origin xyz="-0.044 -6.40162e-19 0.487" rpy="3.14159 1.22465e-16 -6.3414e-30"/>
+      <geometry>
+        <mesh filename="package://assets/flange.stl"/>
+      </geometry>
+      <material name="flange_material">
+        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.044 -6.40162e-19 0.487" rpy="3.14159 1.22465e-16 -6.3414e-30"/>
+      <geometry>
+        <mesh filename="package://assets/flange.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <!-- Joint from link_5 to flange -->
+  <joint name="joint_7" type="revolute">
+    <origin xyz="0.044 0.0295 -0.0192" rpy="-1.5708 3.30068e-14 -1.35188e-15"/>
+    <parent link="link_5"/>
+    <child link="flange"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-3.05433" upper="3.05433"/>
+  </joint>
+  <!-- Joint from motor430_6 to link_5 -->
+  <joint name="joint_6" type="revolute">
+    <origin xyz="0.0252 -0.028 -0.01425" rpy="-1.5708 5.80092e-14 -1.5708"/>
+    <parent link="motor430_6"/>
+    <child link="link_5"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-3.05433" upper="1.13446"/>
+  </joint>
+  <!-- Joint from link_4 to motor430_6 -->
+  <joint name="fix_motor6_to_link4" type="fixed">
+    <origin xyz="-0.01425 -0.006 0.0893" rpy="-1.5708 2.70099e-17 1.5708"/>
+    <parent link="link_4"/>
+    <child link="motor430_6"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10"/>
+  </joint>
+  <!-- Joint from motor430_5 to link_4 -->
+  <joint name="joint_5" type="revolute">
+    <origin xyz="0 -1.81822e-19 0.002" rpy="-3.25397e-27 -5.55112e-17 2.57646e-14"/>
+    <parent link="motor430_5"/>
+    <child link="link_4"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-2.87979" upper="2.87979"/>
+  </joint>
+  <!-- Joint from link_3 to motor430_5 -->
+  <joint name="fix_motor5_to_link3" type="fixed">
+    <origin xyz="-0.044 -0.0727 -0.0247" rpy="1.5708 3.76984e-17 1.11022e-16"/>
+    <parent link="link_3"/>
+    <child link="motor430_5"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10"/>
+  </joint>
+  <!-- Joint from motor540_4 to link_3 -->
+  <joint name="joint_4" type="revolute">
+    <origin xyz="0.038 -0.0327 -0.01675" rpy="-1.5708 -0.785398 3.14159"/>
+    <parent link="motor540_4"/>
+    <child link="link_3"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.44862" upper="1.50098"/>
+  </joint>
+  <!-- Joint from link_2 to motor540_4 -->
+  <joint name="fix_motor4_to_link2" type="fixed">
+    <origin xyz="0.028974 -0.008 0.0465588" rpy="3.14159 -0.785398 -1.47679e-29"/>
+    <parent link="link_2"/>
+    <child link="motor540_4"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10"/>
+  </joint>
+  <!-- Joint from motor430_3 to link_2 -->
+  <joint name="joint_3" type="revolute">
+    <origin xyz="9.64431e-20 -1.81822e-19 0.002" rpy="-3.86284e-29 1.11022e-16 -1.6906e-14"/>
+    <parent link="motor430_3"/>
+    <child link="link_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-2.89725" upper="2.89725"/>
+  </joint>
+  <!-- Joint from link_1 to motor430_3 -->
+  <joint name="fix_motor3_to_link1" type="fixed">
+    <origin xyz="1.63123e-17 -0.0706999 -0.0247" rpy="1.5708 1.76705e-28 -9.86076e-31"/>
+    <parent link="link_1"/>
+    <child link="motor430_3"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10"/>
+  </joint>
+  <!-- Joint from motor540_2 to link_1 -->
+  <joint name="joint_2" type="revolute">
+    <origin xyz="-7.64974e-17 -0.0247 -0.04475" rpy="1.5708 -6.19003e-17 3.28175e-28"/>
+    <parent link="motor540_2"/>
+    <child link="link_1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-1.8326" upper="1.8326"/>
+  </joint>
+  <!-- Joint from link_0 to motor540_2 -->
+  <joint name="fix_motor2_to_link0" type="fixed">
+    <origin xyz="-1.16691e-17 -1.37997e-18 0.08235" rpy="3.14159 7.90463e-29 3.2816e-28"/>
+    <parent link="link_0"/>
+    <child link="motor540_2"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10"/>
+  </joint>
+  <!-- Joint from motor430_1 to link_0 -->
+  <joint name="joint_1" type="revolute">
+    <origin xyz="2.9484e-17 -1.81822e-19 0.002" rpy="5.55112e-17 1.04633e-16 -2.02595e-13"/>
+    <parent link="motor430_1"/>
+    <child link="link_0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10" lower="-2.89725" upper="2.89725"/>
+  </joint>
+  <!-- Joint from link_base to motor430_1 -->
+  <joint name="fix_motor1_to_link_base" type="fixed">
+    <origin xyz="0 8.57253e-19 0.0372" rpy="0 -0 0"/>
+    <parent link="link_base"/>
+    <child link="motor430_1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="10" velocity="10"/>
+  </joint>
+</robot>
