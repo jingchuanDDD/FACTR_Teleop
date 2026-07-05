@@ -1,0 +1,22 @@
+# Copyright (c) Sudeep Dasari, 2023
+
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+
+_target_: factr.trainers.bc.BehaviorCloning
+
+optim_builder:
+  optimizer_type: custom_mae_lrd_adamW
+  optimizer_kwargs:
+    lr: ${lr}
+    weight_decay: 0.05
+    layer_decay: 0.75
+
+schedule_builder:
+  _target_: factr.trainers.utils.schedule_builder
+  schedule_type: 'cosine'
+  from_diffusers: True
+  schedule_kwargs:
+    num_warmup_steps: 250
+    num_training_steps: ${max_iterations}

@@ -1,0 +1,31 @@
+# Copyright (c) Sudeep Dasari, 2023
+
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+defaults:
+  - features: vit_base
+  - _self_
+
+_target_: factr.models.action_transformer.TransformerAgent
+odim: ${task.obs_dim}
+n_cams: ${task.n_cams}
+use_obs: add_token
+dropout: 0.1
+img_dropout: 0
+ac_dim: ${task.ac_dim}
+ac_chunk: ${ac_chunk}
+imgs_per_cam: ${img_chunk}
+share_cam_features: False
+early_fusion: True
+feat_norm: layer_norm
+token_dim: 512
+curriculum: ${curriculum}
+transformer_kwargs:
+  d_model: ${agent.token_dim}
+  dropout: ${agent.dropout}
+  nhead: 8
+  num_encoder_layers: 4
+  num_decoder_layers: 6
+  dim_feedforward: 3200
+  activation: relu

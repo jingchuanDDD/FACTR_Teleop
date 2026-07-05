@@ -1,0 +1,18 @@
+# colcon/CMake output
+build
+install
+log
+
+# python
+__pycache__/
+*.egg-info/
+
+# misc
+.vscode
+.DS_Store
+outputs/
+
+# data & checkpoints
+visual_features/
+processed_data/
+checkpoints/

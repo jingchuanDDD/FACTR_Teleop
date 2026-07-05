@@ -1,0 +1,12 @@
+
+input_path: ../factr_teleop/raw_data/test
+output_path: processed_data/test
+
+cameras_topics:
+- /zed/front/im_left
+obs_topics:
+- /franka/right/obs_franka_torque
+- /gripper/right/obs_gripper_pos
+action_config:
+  /factr_teleop/right/cmd_franka_pos: 7
+  /factr_teleop/right/cmd_gripper_pos: 1
