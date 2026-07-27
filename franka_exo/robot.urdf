@@ -52,7 +52,7 @@
   <link name="link_0">
     <inertial>
       <origin xyz="1.69981e-05 1.84769e-08 0.0628928" rpy="0 0 0"/>
-      <mass value="0.05936"/>
+      <mass value="0.07936"/>
       <inertia ixx="7.09676e-05" ixy="1.2917e-10" ixz="2.75894e-08" iyy="6.98041e-05" iyz="2.31576e-12" izz="4.26188e-05"/>
     </inertial>
     <!-- Part link_0 -->
@@ -76,7 +76,7 @@
   <link name="motor540_2">
     <inertial>
       <origin xyz="-3.71779e-10 -0.000530347 -0.0297101" rpy="0 0 0"/>
-      <mass value="0.165"/>
+      <mass value="0.173"/>
       <inertia ixx="0.00030311" ixy="4.07257e-12" ixz="8.1428e-13" iyy="0.000250045" iyz="-1.41225e-06" izz="0.000172066"/>
     </inertial>
     <!-- Part motor540_2 -->
@@ -100,7 +100,8 @@
   <link name="link_1">
     <inertial>
       <origin xyz="0.000692268 -0.0612309 -0.0247849" rpy="0 0 0"/>
-      <mass value="0.0618805"/>
+      <!-- 0.1381+0.0214-0.082 -->
+      <mass value="0.0775"/>
       <inertia ixx="0.000128786" ixy="-3.56721e-07" ixz="-7.31199e-09" iyy="5.54436e-05" iyz="7.41134e-07" izz="0.000108163"/>
     </inertial>
     <!-- Part link_1 -->
@@ -148,7 +149,7 @@
   <link name="link_2">
     <inertial>
       <origin xyz="0.00261601 2.96796e-07 0.0474293" rpy="0 0 0"/>
-      <mass value="0.05754"/>
+      <mass value="0.0444"/>
       <inertia ixx="5.81373e-05" ixy="5.49634e-10" ixz="-2.48539e-06" iyy="5.58639e-05" iyz="1.1429e-10" izz="5.27528e-05"/>
     </inertial>
     <!-- Part link_2 -->
@@ -172,7 +173,7 @@
   <link name="motor540_4">
     <inertial>
       <origin xyz="0.0229601 -0.00853035 -0.01675" rpy="0 0 0"/>
-      <mass value="0.165"/>
+      <mass value="0.1732"/>
       <inertia ixx="0.000172066" ixy="1.41225e-06" ixz="-8.1428e-13" iyy="0.000250045" iyz="4.07257e-12" izz="0.00030311"/>
     </inertial>
     <!-- Part motor540_4 -->
@@ -196,7 +197,8 @@
   <link name="link_3">
     <inertial>
       <origin xyz="-0.0344992 -0.0669003 -0.0247597" rpy="0 0 0"/>
-      <mass value="0.092856"/>
+      <!-- 0.145-0.082+0.0214 -->
+      <mass value="0.0844"/>
       <inertia ixx="0.000269491" ixy="-6.36052e-05" ixz="4.3825e-07" iyy="8.92212e-05" iyz="8.09945e-07" izz="0.000281089"/>
     </inertial>
     <!-- Part link_3 -->
@@ -244,7 +246,7 @@
   <link name="link_4">
     <inertial>
       <origin xyz="1.68698e-05 1.58818e-07 0.0624505" rpy="0 0 0"/>
-      <mass value="0.0504525"/>
+      <mass value="0.039"/>
       <inertia ixx="6.0696e-05" ixy="-1.77117e-10" ixz="2.08334e-08" iyy="5.96305e-05" iyz="6.61369e-11" izz="3.09362e-05"/>
     </inertial>
     <!-- Part link_4 -->
@@ -292,7 +294,8 @@
   <link name="link_5">
     <inertial>
       <origin xyz="0.0361167 0.00387419 -0.0195081" rpy="0 0 0"/>
-      <mass value="0.0942798"/>
+      <!-- 0.022+0.082 -->
+      <mass value="0.104"/>
       <inertia ixx="6.832e-06" ixy="-5.00654e-07" ixz="-3.31464e-07" iyy="2.04595e-05" iyz="-2.9315e-08" izz="1.47742e-05"/>
     </inertial>
     <!-- Part motor_7 -->
@@ -332,7 +335,7 @@
   <link name="flange">
     <inertial>
       <origin xyz="0.00477078 3.79518e-05 0.0167904" rpy="0 0 0"/>
-      <mass value="0.00663715"/>
+      <mass value="0.0195"/>
       <inertia ixx="1.55713e-06" ixy="-9.0833e-09" ixz="-5.18572e-07" iyy="2.48615e-06" iyz="-4.16646e-09" izz="1.99925e-06"/>
     </inertial>
     <!-- Part flange -->

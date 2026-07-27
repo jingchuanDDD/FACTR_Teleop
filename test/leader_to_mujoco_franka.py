@@ -842,33 +842,34 @@ def run_loop(args: argparse.Namespace) -> int:
                     # + np.array2string(q_sim, precision=3, separator=",")
                     # + " q_err="
                     # + np.array2string(q_err, precision=3, separator=",")
-                    # + " leader_goal_raw="
-                    # + np.array2string(last_goal_current, separator=",")
-                    # + " tau_leader="
-                    # + np.array2string(last_tau, precision=3, separator=",")
+                     " leader_goal_raw="
+                    + np.array2string(last_goal_current, separator=",")
+                    + " tau_leader="
+                    + np.array2string(last_tau, precision=3, separator=",")
                     # +" tau_g="
                     # + np.array2string(last_tau_g, precision=3, separator=",")
                     # + " tau_fs="
                     # + np.array2string(last_tau_fs, precision=3, separator=",")
                     # + " tau_fk="
                     # + np.array2string(last_tau_fk, precision=3, separator=",")
-                    " tau_ext_sim="
-                    + np.array2string(last_tau_ext, precision=3, separator=",")
-                    + " tau_feedback_sim="
-                    + np.array2string(last_tau_feedback, precision=3, separator=",")
+
+                    # +" tau_ext_sim="
+                    # + np.array2string(last_tau_ext, precision=3, separator=",")
+                    # + " tau_feedback_sim="
+                    # + np.array2string(last_tau_feedback, precision=3, separator=",")
                     + " tau_feedback_applied="
                     + np.array2string(last_tau_feedback_applied, precision=3, separator=",")
-                    + " tau_limit="
-                    + np.array2string(last_tau_limit, precision=3, separator=",")
-                    + f" limit={format_limit_status(last_limit_status)}"
+                    # + " tau_limit="
+                    # + np.array2string(last_tau_limit, precision=3, separator=",")
+                    # + f" limit={format_limit_status(last_limit_status)}"
                     # + " ee_pos="
                     # + np.array2string(last_ee_pos, precision=3, separator=",")
                     # + " wall_force="
                     # + np.array2string(last_wall_force, precision=3, separator=",")
-                    +f" wall_contacts={last_wall_contacts}" 
-                    + f" wall_clamped={int(last_wall_clamped)}"
-                    + f" wall_dist={last_wall_contact_dist:.4f}"
-                    + f" wall_pen={last_wall_penetration:.4f}"
+                    # +f" wall_contacts={last_wall_contacts}" 
+                    # + f" wall_clamped={int(last_wall_clamped)}"
+                    # + f" wall_dist={last_wall_contact_dist:.4f}"
+                    # + f" wall_pen={last_wall_penetration:.4f}"
                 )
                 next_log = now + args.log_interval
 

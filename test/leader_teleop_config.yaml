@@ -61,13 +61,13 @@ force_feedback:
   source: contact_normal
   # Debug/tuning knobs. Start with only one joint enabled when checking feedback direction.
   # 把5,7禁掉效果还行
-  joint_enable: [1, 1, 1, 1, 0, 1, 0]
-  joint_gain: [1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1]
-  joint_sign: [-1, -1, -1, -1, 1, 1, 1]
-  contact_force_max: 20.0
-  scale: 1.0
+  joint_enable: [1, 1, 1, 1, 1, 1, 1]
+  joint_gain: [1.0, 1.0, 0.5, 0.5, 0.1, 0.25, 0.5]
+  joint_sign: [-1, -1, -1, 1, -1, 1, 1]
+  contact_force_max: 0.0
+  scale: 0.05
   follower_max_torque: [87, 87, 87, 87, 12, 12, 12]
-  max_torque: [0.12, 0.12, 0.12, 0.12, 0.04, 0.04, 0.04]
+  max_torque: [2.61, 2.61, 2.61, 2.61, 0.36, 0.36, 0.36]
   damping: 0.0
   sign: -1.0
 
@@ -86,7 +86,7 @@ leader_compensation:
     ramp_sec: 3.0
     torque_sign: 1.0
     soft_limits:
-      enable: true
+      enable: false
       source: leader_follower_intersection
       follower_min: [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -1.6573, -2.8973]
       follower_max: [2.8973, 1.7628, 2.8973, -0.4, 2.8973, 2.1127, 2.8973]
@@ -99,20 +99,29 @@ leader_compensation:
 
     gravity_comp:
       enable: true
-      gain: 0.85
-      joint_gain: [1, 1, 1, 1, 1,1.176, 1]
+      gain: 0.8
+      joint_gain: [1, 1, 1, 1, 1,1, 1]
 # 0.026 0.037
     friction_comp:
-      enable: true
+      enable: false
       static:
-        enable: true
+        enable: false
         enable_speed: 0.1
         gain: 0.3
         joint_gain: [1, 1, 0, 0.5, 0,0.8, 0]
         min_torque: [0.005, 0.0, 0, 0, 0, 0.0, 0]
         max_torque: [0.8, 0.8, 0.2, 0, 0, 0.8, 0]
+      # friction_comp:
+      # enable: true
+      # static:
+      #   enable: true
+      #   enable_speed: 0.1
+      #   gain: 0.3
+      #   joint_gain: [1, 1, 0, 0.5, 0,0.8, 0]
+      #   min_torque: [0.005, 0.0, 0, 0, 0, 0.0, 0]
+      #   max_torque: [0.8, 0.8, 0.2, 0, 0, 0.8, 0]
       kinetic:
-        enable: true
-        velocity_deadband: 0.02
-        coulomb: [0.01, 0.05, 0.0, 0.0, 0.0, 0.02, 0.0]
+        enable: false
+        velocity_deadband: 0.1
+        coulomb: [0.01, 0.05, 0.0, 0.01, 0.0, 0.02, 0.0]
         viscous: [0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]

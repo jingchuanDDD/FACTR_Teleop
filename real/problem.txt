@@ -1,0 +1,43 @@
+safety?home?
+1.state包含(q,dq,ee)
+关节力矩能不能从中读到？不能，需要新的server
+2.遥操循环的控制频率?factr 是500hz，但是client move_to_q()里100hz
+遥操读state结果
+samples: 100, warmup: 10, sleep_s: 0.0
+mean_ms:   41.384  (~24.2 Hz)
+median_ms: 41.091
+p95_ms:    42.100
+p99_ms:    42.206
+min_ms:    40.881
+max_ms:    42.238
+遥操频率设置20hz，插值到100hz，server控制循环为200hz，franka本机是1000hz
+3.send_q和move_to_q()有什么差别？
+一个插值一个没插值，代码里参考了插值逻辑
+4.leader自己的重力补偿控制在哪里
+5.server端可以利用get_state()读到的字段:
+message RobotState {
+  // Contains the robot state. Fields are optional
+  // depending on context. Add to this message to
+  // extend for different types of robots/sensors.
+  google.protobuf.Timestamp timestamp = 1;
+  repeated float joint_positions = 2;
+  repeated float joint_velocities = 3;
+  repeated float joint_torques_computed = 4;              //Torques received from the controller server (copy of TorqueCommand.joint_torques)
+  repeated float prev_joint_torques_computed = 5;         //Torques received from the controller server in the previous timestep
+  repeated float prev_joint_torques_computed_safened = 6; //Torques after adding safety mechanisms in the previous timestep
+  repeated float motor_torques_measured = 7;              //Measured torque signals from the robot motors
+  repeated float motor_torques_external = 8;              //Measured external torques exerted on the robot motors
+  repeated float motor_torques_desired = 9;               //Desired torques signals from the robot motors
+  float prev_controller_latency_ms = 10;                  //Latency of previous ControlUpdate call
+  bool prev_command_successful = 11;                      //Whether previous command packet is successfully transmitted
+  int32 error_code = 12;
+}
+6.外力反馈力矩比例等参数是怎么定的？利用leader_max/follower_max*scale
+方向定为什么？目前参数是仿真试出来的，实机也重新试出来
+6.2 加一个遥操前的起始归位程序
+7.  3号关节加了力反馈之后，其他关节没加力反馈，1号关节会自由漂移->两个都加力反馈问题消失
+8. 非承重关节5号加了力反馈后会自由漂移,7号开了力反馈也没有使劲就到处转
+9.力矩低通滤波一下？
+10.遥操有点灵敏
+11.过度力反馈，时间会很长
+12.[force_feedback] disabled for this cycle: cached FR3 state unavailable or too stale

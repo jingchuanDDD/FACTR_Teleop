@@ -1,0 +1,104 @@
+leader:
+  port: COM21
+  baudrate: 57600
+  read_retries: 3
+  retry_delay: 0.01
+
+follower:
+  host: 192.168.20.8
+  port: 5558
+  timeout_s: 2.0
+  retry_times: 1
+  poll_hz: 50.0
+
+mapping:
+  q_m0_deg: [180, 180, 180, 180, 180, 180, 180]
+  q_r0: [0.0,  0.0,  0.0, -1.57,  0.0,  1.57,  0.0]
+  sign: [1, 1, 1, -1, 1, -1, 1]
+  q_min: [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -1.6573, -2.8973]
+  q_max: [2.8973, 1.7628, 2.8973, -0.4, 2.8973, 2.1127, 2.8973]
+
+safety:
+  leader_state_max_age_s: 0.2
+  follower_state_max_age_s: 0.5
+
+force_feedback:
+  enable: true
+  joint_enable: [1, 1, 1, 1, 0, 1, 0]
+  # 仿真中反馈方向joint_sign: [1, 1, 1, 1, -1, -1, -1]
+  # 位置映射变换[1, 1, 1, -1, 1, -1, 1]
+  joint_sign: [-1, -1, -1, 1, 1, 1, 1]
+  joint_gain: [1.0, 1.0, 0.5, 0.5, 0.1, 0.25, 0.5]
+  scale: 0.5
+  follower_max_torque: [87, 87, 87, 87, 12, 12, 12]
+  max_torque: [2.61, 2.61, 2.61, 2.61, 0.36, 0.36, 0.36]
+  damping: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  max_state_age_s: 0.2
+
+leader_compensation:
+  enable: true
+  urdf: franka_exo/robot.urdf
+  q_m0_deg: [180, 180, 180, 180, 180, 180, 180]
+  q_r0: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  sign: [1, 1, 1, 1, 1, 1, 1]
+  controller:
+    max_current_raw: 180
+    current_deadband_raw: [0, 0, 15, 0, 15, 0, 0]
+    ramp_sec: 3.0
+    torque_sign: 1.0
+    soft_limits:
+      enable: false
+      source: leader_follower_intersection
+      follower_min: [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -1.6573, -2.8973]
+      follower_max: [2.8973, 1.7628, 2.8973, -0.4, 2.8973, 2.1127, 2.8973]
+      teleop_q_r0: [0.0, 0.0, 0.0, -1.57, 0.0, 1.57, 0.0]
+      teleop_sign: [1, 1, 1, -1, 1, -1, 1]
+      margin_deg: 5.0
+      kp: [0.35, 0.35, 0.35, 0.35, 0.25, 0.35, 0.12]
+      damping: [0.02, 0.02, 0.02, 0.015, 0.015, 0.01, 0.008]
+      max_torque: [0.10, 0.10, 0.10, 0.08, 0.06, 0.08, 0.03]
+    gravity_comp:
+      enable: true
+      gain: 0.8
+      joint_gain: [1, 1, 1, 1, 1, 1, 1]
+    friction_comp:
+      enable: false
+      static:
+        enable: true
+        enable_speed: 0.1
+        gain: 0.3
+        joint_gain: [1, 1, 0, 0.5, 0, 0.8, 0]
+        min_torque: [0.005, 0.0, 0, 0, 0, 0.0, 0]
+        max_torque: [0.8, 0.8, 0.2, 0, 0, 0.8, 0]
+      kinetic:
+        enable: true
+        velocity_deadband: 0.1
+        coulomb: [0.05, 0.05, 0.0, 0.01, 0.0, 0.02, 0.0]
+        viscous: [0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+teleop:
+  enable: true
+  leader_hz: 20.0
+  command_hz: 100.0
+  verbose: true
+  print_interval_s: 2.0
+
+leader_home:
+  enable: true
+  # Logical motor zero: 180 deg for every joint, equivalent to raw tick 2048.
+  target_raw: [2048, 2048, 2048, 2048, 2048, 2048, 2048]
+  profile_velocity: 20
+  profile_acceleration: 5
+  position_tolerance_ticks: 15
+  velocity_tolerance_raw: 2
+  settle_time_s: 0.3
+  timeout_s: 15.0
+  max_delta_ticks: 1200
+  poll_hz: 20.0
+  verbose: true
+
+home:
+  enable: true
+  q: [6.28932e-02, -8.43689e-02, -1.42660e-01, -1.71726e+00, 3.53091e-04, 1.54351e+00, 4.14175e-02]
+  duration_s: 3.0
+  hz: 100.0
