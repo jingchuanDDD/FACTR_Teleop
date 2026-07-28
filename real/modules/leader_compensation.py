@@ -80,7 +80,7 @@ def load_pinocchio_model(urdf_path: Path) -> tuple[pin.Model, pin.Data]:
 
 
 def gravity_torque(model: pin.Model, data: pin.Data, q: np.ndarray, dq: np.ndarray, gain: float) -> np.ndarray:
-    tau_g = pin.rnea(model, data, q, np.zeros_like(dq), np.zeros_like(dq))
+    tau_g = pin.rnea(model, data, q, dq, np.zeros_like(dq))
     return gain * tau_g
 
 

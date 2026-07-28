@@ -50,3 +50,17 @@ message RobotState {
 17.摩擦补偿有问题，一使劲臂关节就运动很多，精度低
 18.日志不清晰
 
+
+与FACTR差异对比：
+1.控制
+FACTR 控制频率500HZ，我们这里是20HZ+100HZ插值
+2.
+2. Dynamixel 驱动层
+维度	FACTR 源码	real/ 代码	影响
+波特率	4,000,000 bps	57,600 bps	🚨 速度差 70倍！
+USB 延迟检查	检查 latency_timer==1	无检查	可能导致高速通信丢包
+驱动接口	driver.set_torque(torques) (Nm→mA)	leader.write_goal_current(raw) (直接 raw 值)	接口层级不同
+Servo 型号	XC330_T288_T / XM430_W210_T	XM430-W350 / XM540-W270	🚨 完全不同的硬件型号
+扭矩转换	torque_to_current_map = 1158.73 / 371.75 (mA/Nm)	KT × 0.00269 (直接 raw→Nm)	转换系数不同
+电流 clip	np.clip(currents, -900, 900) (mA)	np.clip(values, -250, 250) (raw)	安全限值不同
+波特率是最可能的致命问题。 57.6kbps 为 7 个舵机做同步读写 + 写电流，绝对达不到 500Hz（甚至 100Hz 都困难）。源码用 4Mbps 并强制检查 Linux USB latency_timer=1。
