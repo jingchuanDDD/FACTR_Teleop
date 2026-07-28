@@ -24,12 +24,12 @@ safety:
 
 force_feedback:
   enable: true
-  joint_enable: [1, 1, 1, 1, 0, 1, 0]
+  joint_enable: [1, 1, 1, 1, 1, 1, 1]
   # 仿真中反馈方向joint_sign: [1, 1, 1, 1, -1, -1, -1]
   # 位置映射变换[1, 1, 1, -1, 1, -1, 1]
-  joint_sign: [-1, -1, -1, 1, 1, 1, 1]
-  joint_gain: [1.0, 1.0, 0.5, 0.5, 0.1, 0.25, 0.5]
-  scale: 0.5
+  joint_sign: [-1, -1, -1, 1, -1, 1, 1]
+  joint_gain: [1.0, 1.0, 0.5, 2.0, 0.25, 0.5, 0.25]
+  scale: 2.4
   follower_max_torque: [87, 87, 87, 87, 12, 12, 12]
   max_torque: [2.61, 2.61, 2.61, 2.61, 0.36, 0.36, 0.36]
   damping: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -42,8 +42,8 @@ leader_compensation:
   q_r0: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   sign: [1, 1, 1, 1, 1, 1, 1]
   controller:
-    max_current_raw: 180
-    current_deadband_raw: [0, 0, 15, 0, 15, 0, 0]
+    max_current_raw: 250
+    current_deadband_raw: [0, 0, 15, 0, 15, 0, 15]
     ramp_sec: 3.0
     torque_sign: 1.0
     soft_limits:
@@ -59,15 +59,15 @@ leader_compensation:
       max_torque: [0.10, 0.10, 0.10, 0.08, 0.06, 0.08, 0.03]
     gravity_comp:
       enable: true
-      gain: 0.8
-      joint_gain: [1, 1, 1, 1, 1, 1, 1]
+      gain: 0.85
+      joint_gain: [1, 0.5, 1, 1.2, 1,1.2, 1]
     friction_comp:
-      enable: false
+      enable: true
       static:
         enable: true
         enable_speed: 0.1
-        gain: 0.3
-        joint_gain: [1, 1, 0, 0.5, 0, 0.8, 0]
+        gain: 0.2
+        joint_gain: [1, 0.4, 0, 0.5, 0,1.0, 0]
         min_torque: [0.005, 0.0, 0, 0, 0, 0.0, 0]
         max_torque: [0.8, 0.8, 0.2, 0, 0, 0.8, 0]
       kinetic:

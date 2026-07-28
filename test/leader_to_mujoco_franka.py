@@ -842,14 +842,16 @@ def run_loop(args: argparse.Namespace) -> int:
                     # + np.array2string(q_sim, precision=3, separator=",")
                     # + " q_err="
                     # + np.array2string(q_err, precision=3, separator=",")
-                     " leader_goal_raw="
+                    "dq_leader="
+                    + np.array2string(dq_comp_now, precision=3, separator=",")
+                    + " leader_goal_raw="
                     + np.array2string(last_goal_current, separator=",")
-                    + " tau_leader="
-                    + np.array2string(last_tau, precision=3, separator=",")
-                    # +" tau_g="
-                    # + np.array2string(last_tau_g, precision=3, separator=",")
-                    # + " tau_fs="
-                    # + np.array2string(last_tau_fs, precision=3, separator=",")
+                    # + " tau_leader="
+                    # + np.array2string(last_tau, precision=3, separator=",")
+                    +" tau_g="
+                    + np.array2string(last_tau_g, precision=3, separator=",")
+                    + " tau_fs="
+                    + np.array2string(last_tau_fs, precision=3, separator=",")
                     # + " tau_fk="
                     # + np.array2string(last_tau_fk, precision=3, separator=",")
 
@@ -857,8 +859,8 @@ def run_loop(args: argparse.Namespace) -> int:
                     # + np.array2string(last_tau_ext, precision=3, separator=",")
                     # + " tau_feedback_sim="
                     # + np.array2string(last_tau_feedback, precision=3, separator=",")
-                    + " tau_feedback_applied="
-                    + np.array2string(last_tau_feedback_applied, precision=3, separator=",")
+                    # + " tau_feedback_applied="
+                    # + np.array2string(last_tau_feedback_applied, precision=3, separator=",")
                     # + " tau_limit="
                     # + np.array2string(last_tau_limit, precision=3, separator=",")
                     # + f" limit={format_limit_status(last_limit_status)}"

@@ -41,3 +41,12 @@ message RobotState {
 10.遥操有点灵敏
 11.过度力反馈，时间会很长
 12.[force_feedback] disabled for this cycle: cached FR3 state unavailable or too stale
+
+13.遥操很费劲 缓解到能接受的程度了
+14.力反馈时6号关节容易弹开，有些关节会左右乱动
+
+15. 6号关节往上走FACTR不响应
+16.遥操卡顿
+17.摩擦补偿有问题，一使劲臂关节就运动很多，精度低
+18.日志不清晰
+

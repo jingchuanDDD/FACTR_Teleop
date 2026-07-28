@@ -63,7 +63,6 @@ def run_teleop_loop(
         )
     command_dt = 1.0 / command_hz
     leader_dt = 1.0 / leader_hz
-    interp_steps = command_hz / leader_hz
 
     last_print_t = 0.0
     stop_event = threading.Event()
