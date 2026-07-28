@@ -82,7 +82,7 @@ def resolve_relative_path(path_value: str, config_dir: Path) -> str:
     return str((repo_root / path).resolve())
 
 
-def build_leader_compensation(cfg: Dict[str, Any] | None, config_dir: Path):
+def build_leader_compensation(cfg: Dict[str, Any] | None, config_dir: Path, max_current_raw: int):
     if not cfg or not bool(cfg.get("enable", False)):
         return None
     cfg = dict(cfg)
@@ -95,7 +95,7 @@ def build_leader_compensation(cfg: Dict[str, Any] | None, config_dir: Path):
             raise
         from modules.leader_compensation import LeaderCompensation
 
-    return LeaderCompensation(cfg)
+    return LeaderCompensation(cfg, max_current_raw)
 
 
 def build_force_feedback(cfg: Dict[str, Any] | None, compensation):
@@ -197,6 +197,7 @@ def main() -> int:
             baudrate=int(leader_cfg["baudrate"]),
             read_retries=int(leader_cfg.get("read_retries", 3)),
             retry_delay=float(leader_cfg.get("retry_delay", 0.01)),
+            max_current_raw=int(leader_cfg["max_current_raw"]),
         ) as leader:
             run_configured_leader_home(leader, leader_home_cfg)
         return 0
@@ -208,6 +209,7 @@ def main() -> int:
         baudrate=int(leader_cfg["baudrate"]),
         read_retries=int(leader_cfg.get("read_retries", 3)),
         retry_delay=float(leader_cfg.get("retry_delay", 0.01)),
+        max_current_raw=int(leader_cfg["max_current_raw"]),
     ) as leader, FR3Backend(
         host=follower_cfg["host"],
         port=int(follower_cfg["port"]),
@@ -252,7 +254,8 @@ def main() -> int:
         if bool(leader_home_cfg.get("enable", False)):
             run_configured_leader_home(leader, leader_home_cfg)
 
-        compensation = build_leader_compensation(leader_comp_cfg, config_path.parent)
+        leader_max_current_raw = int(leader_cfg["max_current_raw"])
+        compensation = build_leader_compensation(leader_comp_cfg, config_path.parent, leader_max_current_raw)
         force_feedback = build_force_feedback(force_feedback_cfg, compensation)
         run_teleop_loop(
             leader,

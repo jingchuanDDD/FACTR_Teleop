@@ -125,12 +125,19 @@ class LeaderDynamixelReader:
         read_retries: int = 3,
         retry_delay: float = 0.01,
         joint_ids: Sequence[int] = DEFAULT_JOINT_IDS,
+        max_current_raw: Sequence[int] | None = None,
     ):
         self.port_name = str(port_name)
         self.baudrate = int(baudrate)
         self.read_retries = int(read_retries)
         self.retry_delay = float(retry_delay)
         self.joint_ids = tuple(int(x) for x in joint_ids)
+        if max_current_raw is not None:
+            self.max_current_raw = np.broadcast_to(
+                np.asarray(max_current_raw, dtype=int), len(self.joint_ids)
+            ).copy()
+        else:
+            self.max_current_raw = None
         self.packet = PacketHandler(PROTOCOL_VERSION)
         self.port = open_dynamixel_port(self.port_name, self.baudrate)
         self.reader = GroupSyncRead(self.port, self.packet, ADDR_PRESENT_CURRENT, LEN_SYNC_READ)
@@ -348,6 +355,8 @@ class LeaderDynamixelReader:
         values = np.asarray(raw_currents, dtype=int).reshape(-1)
         if values.shape != (len(self.joint_ids),):
             raise ValueError(f"raw_currents must have shape ({len(self.joint_ids)},), got {values.shape}")
+        if self.max_current_raw is not None:
+            values = np.clip(values, -self.max_current_raw, self.max_current_raw)
         last_result = None
         for _ in range(2):
             self.writer.clearParam()

@@ -181,7 +181,7 @@ class LeaderCompensationResult:
 
 
 class LeaderCompensation:
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, max_current_raw: int):
         self.enable = bool(config.get("enable", False))
         self.q_m0 = np.deg2rad(require_vector(config, "q_m0_deg", 7, float))
         self.q_r0 = require_vector(config, "q_r0", 7, float)
@@ -202,11 +202,10 @@ class LeaderCompensation:
 
         self.gravity_gain = float(gravity_config["gain"])
         self.joint_gain = require_vector(gravity_config, "joint_gain", 7, float)
-        self.max_current_raw = int(controller_config["max_current_raw"])
         self.current_deadband_raw = require_vector(controller_config, "current_deadband_raw", 7, int)
         self.ramp_sec = float(controller_config["ramp_sec"])
         self.torque_sign = float(controller_config["torque_sign"])
-        self.max_torque_nm = self.max_current_raw * GOAL_CURRENT_UNIT_AMP * KT
+        self.max_torque_nm = max_current_raw * GOAL_CURRENT_UNIT_AMP * KT
 
         limit_config = controller_config.get("soft_limits", {})
         self.soft_limit_enable = bool(limit_config.get("enable", False))
@@ -331,10 +330,9 @@ class LeaderCompensation:
             tau_limit = tau - tau_before_limit
             limit_status = joint_limit_status(q, self.soft_limit_min, self.soft_limit_max, self.soft_limit_margin)
 
-        tau = np.clip(tau, -self.max_torque_nm, self.max_torque_nm)
         tau_motor = self.torque_sign * self.sign * tau
         raw = tau_motor / (KT * GOAL_CURRENT_UNIT_AMP)
-        goal_pre_deadband = np.rint(np.clip(raw, -self.max_current_raw, self.max_current_raw)).astype(int)
+        goal_pre_deadband = np.rint(raw).astype(int)
         goal_current = apply_current_deadband(goal_pre_deadband, self.current_deadband_raw)
         return LeaderCompensationResult(
             q=q,

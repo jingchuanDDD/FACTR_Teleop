@@ -34,7 +34,6 @@ class ForceFeedback:
         self.joint_sign = _vector(config, "joint_sign", [1.0] * 7)
         self.joint_gain = _vector(config, "joint_gain", [1.0] * 7)
         self.follower_max_torque = _vector(config, "follower_max_torque")
-        self.max_torque = _vector(config, "max_torque")
         self.damping = _vector(config, "damping", [0.0] * 7)
         self.scale = float(config.get("scale", 1.0))
         self.max_state_age_s = float(config.get("max_state_age_s", 0.1))
@@ -46,8 +45,6 @@ class ForceFeedback:
             raise ValueError("leader_max_torque must be positive for every joint")
         if np.any(self.follower_max_torque <= 0.0):
             raise ValueError("force_feedback.follower_max_torque must be positive")
-        if np.any(self.max_torque < 0.0):
-            raise ValueError("force_feedback.max_torque must be non-negative")
         if np.any(self.joint_gain < 0.0):
             raise ValueError("force_feedback.joint_gain must be non-negative")
         if self.scale < 0.0 or not np.isfinite(self.scale):
@@ -74,7 +71,7 @@ class ForceFeedback:
             * tau_external
             - self.damping * dq_leader
         )
-        tau_applied = np.clip(tau_raw, -self.max_torque, self.max_torque)
+        tau_applied = tau_raw.copy()
         if not self.enable:
             tau_applied = np.zeros(7, dtype=np.float64)
         return ForceFeedbackResult(
