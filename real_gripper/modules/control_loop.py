@@ -64,6 +64,7 @@ def run_teleop_loop(
         )
     command_dt = 1.0 / command_hz
     leader_dt = 1.0 / leader_hz
+    interp_steps = command_hz / leader_hz
 
     last_print_t = 0.0
     stop_event = threading.Event()
@@ -180,7 +181,6 @@ def run_teleop_loop(
             fallback_to_sync=True,
         )
         q_cmd = safety.validate_q(q_cmd, name="initial_franka_q")
-        
         q_start = q_cmd.copy()
         q_goal = q_cmd.copy()
         segment_start_t = time.monotonic()
@@ -195,7 +195,7 @@ def run_teleop_loop(
             if now < next_command_t:
                 time.sleep(min(next_command_t - now, 0.001))
                 continue
-            next_command_t = now + command_dt
+            next_command_t += command_dt
 
             with target_lock:
                 new_target = None if latest_target is None else latest_target.copy()
@@ -270,5 +270,10 @@ def run_teleop_loop(
         stop_event.set()
         if "leader_thread" in locals():
             leader_thread.join(timeout=1.0)
+            if leader_thread.is_alive():
+                print(
+                    "[control_loop] WARNING: leader_read_loop did not stop within 1.0 s "
+                    "(likely blocked in I/O); proceeding with shutdown anyway."
+                )
         if leader_output_active:
             leader.safe_shutdown()

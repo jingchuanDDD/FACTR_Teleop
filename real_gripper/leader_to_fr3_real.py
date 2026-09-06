@@ -3,25 +3,172 @@ from __future__ import annotations
 """Real-robot teleoperation entry point for FR3."""
 
 import argparse
+import os
 from pathlib import Path
-from typing import Any, Dict
+import sys
+import threading
+import time
+from typing import Any, Dict, Optional
 
 import numpy as np
 import yaml
 
+if os.name == "nt":
+    import msvcrt
+else:
+    import select
+    import termios
+    import tty
+
 try:
-    from real.modules.control_loop import TeleopLoopConfig, run_teleop_loop
-    from real.modules.mapping import JointMapper, JointMapperConfig
-    from real.modules.safety import SafetyConfig, SafetyMonitor
+    from real_gripper.fr3_gripper import GripperClient
+    from real_gripper.modules.control_loop import TeleopLoopConfig, run_teleop_loop
+    from real_gripper.modules.mapping import JointMapper, JointMapperConfig
+    from real_gripper.modules.safety import SafetyConfig, SafetyMonitor
 except ModuleNotFoundError as exc:
-    if exc.name != "real":
+    if exc.name != "real_gripper":
         raise
+    from fr3_gripper import GripperClient
     from modules.control_loop import TeleopLoopConfig, run_teleop_loop
     from modules.mapping import JointMapper, JointMapperConfig
     from modules.safety import SafetyConfig, SafetyMonitor
 
-
 DEFAULT_CONFIG_PATH = Path(__file__).with_name("configs").joinpath("real_fr3.yaml")
+
+
+class SpaceGripperController:
+    """Toggle the gripper from a non-blocking terminal keyboard thread."""
+
+    def __init__(
+        self,
+        gripper: GripperClient,
+        *,
+        open_width: float = 0.08,
+        close_width: float = 0.000,
+        speed: float = 0.05,
+        force: float = 0.5,
+    ) -> None:
+        if not 0.0 <= close_width < open_width:
+            raise ValueError(
+                "gripper widths must satisfy "
+                f"0 <= close_width < open_width, got {close_width}, {open_width}"
+            )
+        if speed <= 0.0:
+            raise ValueError(f"gripper speed must be positive, got {speed}")
+        if force < 0.0:
+            raise ValueError(f"gripper force must be non-negative, got {force}")
+
+        self.gripper = gripper
+        self.open_width = float(open_width)
+        self.close_width = float(close_width)
+        self.speed = float(speed)
+        self.force = float(force)
+        self.closed = False
+
+        self._stop_event = threading.Event()
+        self._thread: Optional[threading.Thread] = None
+        self._stdin_fd: Optional[int] = None
+        self._old_terminal_settings = None
+
+    def __enter__(self) -> "SpaceGripperController":
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.stop()
+
+    def start(self) -> bool:
+        if self._thread is not None:
+            return True
+        if not sys.stdin.isatty():
+            print("[gripper] stdin is not a TTY; space-key control is disabled.")
+            return False
+
+        if os.name != "nt":
+            self._stdin_fd = sys.stdin.fileno()
+            self._old_terminal_settings = termios.tcgetattr(self._stdin_fd)
+            tty.setcbreak(self._stdin_fd)
+
+        self._stop_event.clear()
+        self._thread = threading.Thread(
+            target=self._keyboard_loop,
+            name="gripper-keyboard",
+            daemon=True,
+        )
+        try:
+            self._thread.start()
+        except Exception:
+            self._restore_terminal()
+            self._thread = None
+            raise
+
+        print("[gripper] Space: toggle open/close | initial toggle: CLOSE")
+        return True
+
+    def stop(self) -> None:
+        self._stop_event.set()
+        if self._thread is not None:
+            self._thread.join(timeout=1.0)
+            self._thread = None
+        self._restore_terminal()
+
+    def _restore_terminal(self) -> None:
+        if (
+            os.name != "nt"
+            and self._stdin_fd is not None
+            and self._old_terminal_settings is not None
+        ):
+            try:
+                termios.tcsetattr(
+                    self._stdin_fd,
+                    termios.TCSADRAIN,
+                    self._old_terminal_settings,
+                )
+            except Exception:
+                pass
+        self._stdin_fd = None
+        self._old_terminal_settings = None
+
+    def _poll_key(self, timeout_s: float) -> Optional[str]:
+        if os.name == "nt":
+            deadline = time.monotonic() + timeout_s
+            while not self._stop_event.is_set() and time.monotonic() < deadline:
+                if msvcrt.kbhit():
+                    return msvcrt.getwch()
+                time.sleep(0.01)
+            return None
+
+        ready, _, _ = select.select([sys.stdin], [], [], timeout_s)
+        return sys.stdin.read(1) if ready else None
+
+    def _keyboard_loop(self) -> None:
+        while not self._stop_event.is_set():
+            try:
+                key = self._poll_key(timeout_s=0.1)
+            except Exception as exc:
+                print(f"[gripper] keyboard listener stopped: {exc}")
+                return
+
+            if key != " ":
+                continue
+
+            requested_closed = not self.closed
+            requested_width = (
+                self.close_width if requested_closed else self.open_width
+            )
+            try:
+                self.gripper.send_gripper(
+                    width=requested_width,
+                    speed=self.speed,
+                    force=self.force,
+                )
+            except Exception as exc:
+                print(f"[gripper] command failed: {exc}")
+                continue
+
+            self.closed = requested_closed
+            state = "CLOSED" if self.closed else "OPEN"
+            print(f"[gripper] {state}: width={requested_width:.4f} m")
 
 
 def load_yaml_config(path: Path) -> Dict[str, Any]:
@@ -82,7 +229,7 @@ def resolve_relative_path(path_value: str, config_dir: Path) -> str:
     return str((repo_root / path).resolve())
 
 
-def build_leader_compensation(cfg: Dict[str, Any] | None, config_dir: Path, max_current_raw: int):
+def build_leader_compensation(cfg: Dict[str, Any] | None, config_dir: Path):
     if not cfg or not bool(cfg.get("enable", False)):
         return None
     cfg = dict(cfg)
@@ -95,7 +242,7 @@ def build_leader_compensation(cfg: Dict[str, Any] | None, config_dir: Path, max_
             raise
         from modules.leader_compensation import LeaderCompensation
 
-    return LeaderCompensation(cfg, max_current_raw)
+    return LeaderCompensation(cfg)
 
 
 def build_force_feedback(cfg: Dict[str, Any] | None, compensation):
@@ -149,6 +296,23 @@ def run_configured_leader_home(leader, cfg: Dict[str, Any]) -> None:
     )
 
 
+def run_configured_franka_home(
+    franka,
+    safety: SafetyMonitor,
+    cfg: Dict[str, Any],
+) -> None:
+    home_q = np.asarray(cfg["q"], dtype=np.float64).reshape(7)
+    print("[home] moving Franka to =", np.array2string(home_q, precision=5))
+    franka.move_to_q(
+        home_q,
+        duration_s=float(cfg.get("duration_s", 3.0)),
+        hz=float(cfg.get("hz", 100.0)),
+        current_q_max_age_s=float(safety.follower_state_max_age_s),
+        fallback_to_sync=True,
+        verbose=True,
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Real FR3 teleoperation entry point.")
     parser.add_argument("--config", default=str(DEFAULT_CONFIG_PATH), help="YAML config path")
@@ -169,6 +333,7 @@ def main() -> int:
     teleop_cfg = cfg["teleop"]
     leader_comp_cfg = cfg.get("leader_compensation", {"enable": False})
     force_feedback_cfg = cfg.get("force_feedback", {"enable": False})
+    gripper_cfg = cfg.get("gripper", {"enable": True})
     home_cfg = cfg.get("home", {})
     leader_home_cfg = cfg.get("leader_home", {"enable": False})
 
@@ -198,7 +363,6 @@ def main() -> int:
             baudrate=int(leader_cfg["baudrate"]),
             read_retries=int(leader_cfg.get("read_retries", 3)),
             retry_delay=float(leader_cfg.get("retry_delay", 0.01)),
-            max_current_raw=int(leader_cfg["max_current_raw"]),
         ) as leader:
             run_configured_leader_home(leader, leader_home_cfg)
         return 0
@@ -210,13 +374,13 @@ def main() -> int:
         baudrate=int(leader_cfg["baudrate"]),
         read_retries=int(leader_cfg.get("read_retries", 3)),
         retry_delay=float(leader_cfg.get("retry_delay", 0.01)),
-        max_current_raw=int(leader_cfg["max_current_raw"]),
     ) as leader, FR3Backend(
         host=follower_cfg["host"],
         port=int(follower_cfg["port"]),
         timeout_s=float(follower_cfg.get("timeout_s", 2.0)),
         retry_times=int(follower_cfg.get("retry_times", 1)),
     ) as franka:
+        # check connectivity and start state poller
         print("[franka] ping ->", franka.ping())
         franka.start_state_poller(
             poll_hz=float(follower_cfg.get("poll_hz", 50.0)),
@@ -240,33 +404,56 @@ def main() -> int:
             if not bool(home_cfg.get("enable", True)):
                 print("[home] disabled in config")
                 return 0
-            home_q = np.asarray(home_cfg["q"], dtype=np.float64).reshape(7)
-            print("[home] move to =", np.array2string(home_q, precision=5))
-            franka.move_to_q(
-                home_q,
-                duration_s=float(home_cfg.get("duration_s", 3.0)),
-                hz=float(home_cfg.get("hz", 100.0)),
-                current_q_max_age_s=float(safety.follower_state_max_age_s),
-                fallback_to_sync=True,
-                verbose=True,
-            )
+            run_configured_franka_home(franka, safety, home_cfg)
             return 0
+
+        if bool(home_cfg.get("enable", False)):
+            run_configured_franka_home(franka, safety, home_cfg)
 
         if bool(leader_home_cfg.get("enable", False)):
             run_configured_leader_home(leader, leader_home_cfg)
 
-        leader_max_current_raw = int(leader_cfg["max_current_raw"])
-        compensation = build_leader_compensation(leader_comp_cfg, config_path.parent, leader_max_current_raw)
+        compensation = build_leader_compensation(leader_comp_cfg, config_path.parent)
         force_feedback = build_force_feedback(force_feedback_cfg, compensation)
-        run_teleop_loop(
-            leader,
-            franka,
-            mapper,
-            safety,
-            teleop_loop_cfg,
-            compensation,
-            force_feedback,
-        )
+        if bool(gripper_cfg.get("enable", True)):
+            with GripperClient(
+                host=str(gripper_cfg.get("host", follower_cfg["host"])),
+                port=int(gripper_cfg.get("port", follower_cfg["port"])),
+                timeout_s=float(
+                    gripper_cfg.get(
+                        "timeout_s",
+                        follower_cfg.get("timeout_s", 2.0),
+                    )
+                ),
+            ) as gripper:
+                print("[gripper] ping ->", gripper.ping())
+                with SpaceGripperController(
+                    gripper,
+                    open_width=float(gripper_cfg.get("open_width", 0.08)),
+                    close_width=float(gripper_cfg.get("close_width", 0.0002)),
+                    speed=float(gripper_cfg.get("speed", 0.05)),
+                    force=float(gripper_cfg.get("force", 0.1)),
+                ):
+                    run_teleop_loop(
+                        leader,
+                        franka,
+                        mapper,
+                        safety,
+                        teleop_loop_cfg,
+                        compensation,
+                        force_feedback,
+                    )
+        else:
+            print("[gripper] disabled in config")
+            run_teleop_loop(
+                leader,
+                franka,
+                mapper,
+                safety,
+                teleop_loop_cfg,
+                compensation,
+                force_feedback,
+            )
         return 0
 
 

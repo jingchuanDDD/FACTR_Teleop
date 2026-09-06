@@ -3,7 +3,6 @@ leader:
   baudrate: 57600
   read_retries: 3
   retry_delay: 0.01
-  max_current_raw: 180
 
 follower:
   host: 192.168.20.8
@@ -11,6 +10,17 @@ follower:
   timeout_s: 2.0
   retry_times: 1
   poll_hz: 50.0
+
+gripper:
+  enable: true
+  # host/port 默认也可与 follower 相同；这里显式写出，便于单独修改。
+  host: 192.168.20.8
+  port: 5559
+  timeout_s: 2.0
+  open_width: 0.08
+  close_width: 0.03
+  speed: 0.05
+  force: 0.5
 
 mapping:
   q_m0_deg: [180, 180, 180, 180, 180, 180, 180]
@@ -25,13 +35,14 @@ safety:
 
 force_feedback:
   enable: false
-  joint_enable: [1, 1, 1, 1, 1, 1, 1]
+  joint_enable: [1, 1, 1, 1, 0, 1, 0]
   # 仿真中反馈方向joint_sign: [1, 1, 1, 1, -1, -1, -1]
   # 位置映射变换[1, 1, 1, -1, 1, -1, 1]
-  joint_sign: [-1, -1, -1, 1, -1, 1, -1]
-  joint_gain: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+  joint_sign: [-1, -1, -1, 1, 1, 1, 1]
+  joint_gain: [1.0, 1.0, 0.5, 0.5, 0.1, 0.25, 0.5]
   scale: 0.5
   follower_max_torque: [87, 87, 87, 87, 12, 12, 12]
+  max_torque: [2.61, 2.61, 2.61, 2.61, 0.36, 0.36, 0.36]
   damping: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   max_state_age_s: 0.2
 
@@ -42,7 +53,8 @@ leader_compensation:
   q_r0: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   sign: [1, 1, 1, 1, 1, 1, 1]
   controller:
-    current_deadband_raw: [0, 0, 15, 0, 15, 0, 15]
+    max_current_raw: 180
+    current_deadband_raw: [0, 0, 15, 0, 15, 0, 0]
     ramp_sec: 3.0
     torque_sign: 1.0
     soft_limits:
@@ -58,15 +70,15 @@ leader_compensation:
       max_torque: [0.10, 0.10, 0.10, 0.08, 0.06, 0.08, 0.03]
     gravity_comp:
       enable: true
-      gain: 0.85
-      joint_gain: [1, 0.5, 1, 1.2, 1,1.2, 1]
+      gain: 0.7
+      joint_gain: [1, 1, 1, 1, 1, 1, 1]
     friction_comp:
-      enable: true
+      enable: false
       static:
         enable: true
-        enable_speed: 0.9
-        gain: 0.2
-        joint_gain: [1, 0.4, 0, 0.5, 0,1.0, 0]
+        enable_speed: 0.1
+        gain: 0.3
+        joint_gain: [1, 1, 0, 0.5, 0, 0.8, 0]
         min_torque: [0.005, 0.0, 0, 0, 0, 0.0, 0]
         max_torque: [0.8, 0.8, 0.2, 0, 0, 0.8, 0]
       kinetic:
